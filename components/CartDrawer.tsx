@@ -169,7 +169,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       </div>
                       <div className="flex-grow py-1">
                         <h4 className="font-bold text-slate-800 line-clamp-1">{item.name}</h4>
-                        <p className="text-primary font-black text-sm mt-0.5">Rp {item.price.toLocaleString('id-ID')}</p>
+                        <p className="text-primary font-black text-sm mt-0.5">Rp {Number(item.price).toLocaleString('id-ID')}</p>
                         <div className="flex items-center gap-3 mt-2">
                           <div className="flex items-center gap-2 bg-slate-50 border border-slate-100 p-1 rounded-xl">
                             <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="w-8 h-8 flex items-center justify-center font-bold text-slate-400 hover:text-slate-800 transition-colors">&minus;</button>

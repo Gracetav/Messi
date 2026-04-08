@@ -51,7 +51,7 @@ const ProductCard = ({ product }: ProductProps) => {
           <div className="flex flex-col">
             <span className="text-[10px] text-slate-400 uppercase font-medium">Harga</span>
             <span className="text-primary font-bold text-xl">
-              Rp {product.price.toLocaleString("id-ID")}
+              Rp {Number(product.price).toLocaleString("id-ID")}
             </span>
           </div>
 
