@@ -172,9 +172,9 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         <p className="text-primary font-black text-sm mt-0.5">Rp {item.price.toLocaleString('id-ID')}</p>
                         <div className="flex items-center gap-3 mt-2">
                           <div className="flex items-center gap-2 bg-slate-50 border border-slate-100 p-1 rounded-xl">
-                            <button onClick={() => updateQuantity(item.id, -1)} className="w-8 h-8 flex items-center justify-center font-bold text-slate-400 hover:text-slate-800 transition-colors">&minus;</button>
+                            <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="w-8 h-8 flex items-center justify-center font-bold text-slate-400 hover:text-slate-800 transition-colors">&minus;</button>
                             <span className="font-black text-slate-800 text-sm w-4 text-center">{item.quantity}</span>
-                            <button onClick={() => updateQuantity(item.id, 1)} className="w-8 h-8 flex items-center justify-center font-bold text-slate-400 hover:text-slate-800 transition-colors">+</button>
+                            <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="w-8 h-8 flex items-center justify-center font-bold text-slate-400 hover:text-slate-800 transition-colors">+</button>
                           </div>
                           <button onClick={() => removeFromCart(item.id)} className="text-red-400 hover:text-red-600 transition-colors ml-auto opacity-0 group-hover:opacity-100">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
