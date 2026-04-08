@@ -82,7 +82,7 @@ exports.getUserOrders = async (req, res) => {
   const { userId } = req.params;
   try {
     const [orders] = await db.query('SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC', [userId]);
-    res.json(orde rs);
+    res.json(orders);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
