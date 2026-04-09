@@ -15,7 +15,8 @@ export default function LandingPage() {
   const [user, setUser] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const { cartCount } = useCart();
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const { cartCount, addToCart } = useCart();
   const router = useRouter();
 
   useEffect(() => {
@@ -49,7 +50,7 @@ export default function LandingPage() {
     }
   }, [router]);
 
-  const categories = Array.isArray(products) ? Array.from(new Set(products.map(p => p.category))) : [];
+  const categories = Array.isArray(products) ? Array.from(new Set(products.filter(p => p.category_name).map(p => p.category_name))) : [];
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -184,8 +185,8 @@ export default function LandingPage() {
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
-                {products.filter(p => p.category === cat).map((p) => (
-                  <ProductCard key={p.id} product={p} />
+                {products.filter(p => p.category_name === cat).map((p) => (
+                  <ProductCard key={p.id} product={p} onOpenDetail={() => setSelectedProduct(p)} />
                 ))}
               </div>
             </div>
@@ -209,6 +210,62 @@ export default function LandingPage() {
            </div>
          ))}
       </section>
+
+      {/* Product Detail Modal */}
+      {selectedProduct && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300">
+           <div className="bg-white w-full max-w-4xl rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col md:flex-row">
+              <div className="md:w-1/2 bg-slate-100 relative">
+                 <img 
+                   src={selectedProduct.image.startsWith('http') ? selectedProduct.image : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5001'}${selectedProduct.image}`} 
+                   className="w-full h-full object-cover aspect-square" 
+                   alt={selectedProduct.name} 
+                 />
+                 <button 
+                  onClick={() => setSelectedProduct(null)} 
+                  className="absolute top-6 left-6 p-3 bg-white/80 backdrop-blur-md rounded-2xl text-slate-800 hover:bg-white transition-all shadow-lg"
+                 >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                 </button>
+              </div>
+              <div className="md:w-1/2 p-12 flex flex-col">
+                 <div className="mb-8">
+                    <span className="bg-primary/10 text-primary text-[10px] font-black tracking-widest px-4 py-1.5 rounded-full border border-primary/20 uppercase">
+                        {selectedProduct.category_name}
+                    </span>
+                    <h2 className="text-4xl font-black text-slate-800 mt-4 leading-tight">{selectedProduct.name}</h2>
+                    <p className="text-3xl font-black text-primary mt-4">Rp {Number(selectedProduct.price).toLocaleString('id-ID')}</p>
+                 </div>
+
+                 <div className="flex-grow overflow-y-auto pr-4 mb-8">
+                    <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3">Deskripsi Produk</h4>
+                    <p className="text-slate-600 leading-relaxed font-medium">
+                        {selectedProduct.description || 'Tidak ada deskripsi untuk produk ini.'}
+                    </p>
+                 </div>
+
+                 <div className="flex gap-4">
+                    <button 
+                      onClick={() => {
+                        addToCart(selectedProduct);
+                        setSelectedProduct(null);
+                        setIsCartOpen(true);
+                      }}
+                      className="flex-grow bg-primary hover:bg-primary-hover text-white py-5 rounded-2xl font-black text-lg transition-all shadow-xl shadow-primary/20 hover:-translate-y-1 active:translate-y-0"
+                    >
+                        Tambah ke Keranjang
+                    </button>
+                    <button 
+                      onClick={() => setSelectedProduct(null)}
+                      className="px-8 py-5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-2xl font-bold transition-all"
+                    >
+                        Tutup
+                    </button>
+                 </div>
+              </div>
+           </div>
+        </div>
+      )}
 
       <footer className="mt-40 border-t border-slate-100 p-16 bg-white">
          <div className="max-w-7xl mx-auto flex flex-col items-center">

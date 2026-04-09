@@ -248,7 +248,7 @@ export default function AdminProductsPage() {
                           </div>
                           <div>
                             <p className="font-bold text-slate-800 text-lg leading-tight group-hover:text-primary transition-colors">{p.name}</p>
-                            <p className="text-xs text-slate-400 line-clamp-1 mt-1">{p.description}</p>
+                            <p className="text-xs text-slate-400 line-clamp-2 mt-1 max-w-xs">{p.description}</p>
                           </div>
                         </div>
                       </td>
