@@ -15,12 +15,15 @@ export default function AdminProductsPage() {
   };
 
   const [products, setProducts] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [brands, setBrands] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [formData, setFormData] = useState({
     name: '',
-    category: 'Suku Cadang Mesin',
+    category_id: '',
+    brand_id: '',
     price: 0,
     stock: 0,
     description: ''
@@ -36,7 +39,6 @@ export default function AdminProductsPage() {
       if (Array.isArray(data)) {
         setProducts(data);
       } else {
-        console.error('Data produk bukan array:', data);
         setProducts([]);
       }
     } catch (err) {
@@ -47,8 +49,30 @@ export default function AdminProductsPage() {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api'}/categories`);
+      const data = await response.json();
+      if (Array.isArray(data)) setCategories(data);
+    } catch (err) {
+      console.error('Gagal mengambil kategori:', err);
+    }
+  };
+
+  const fetchBrands = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api'}/brands`);
+      const data = await response.json();
+      if (Array.isArray(data)) setBrands(data);
+    } catch (err) {
+      console.error('Gagal mengambil brand:', err);
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
+    fetchCategories();
+    fetchBrands();
   }, []);
 
   const handleOpenModal = (product: any = null) => {
@@ -56,7 +80,8 @@ export default function AdminProductsPage() {
       setEditingProduct(product);
       setFormData({
         name: product.name,
-        category: product.category,
+        category_id: product.category_id || '',
+        brand_id: product.brand_id || '',
         price: product.price,
         stock: product.stock,
         description: product.description
@@ -66,7 +91,8 @@ export default function AdminProductsPage() {
       setEditingProduct(null);
       setFormData({
         name: '',
-        category: 'Suku Cadang Mesin',
+        category_id: categories.length > 0 ? categories[0].id : '',
+        brand_id: brands.length > 0 ? brands[0].id : '',
         price: 0,
         stock: 0,
         description: ''
@@ -121,7 +147,8 @@ export default function AdminProductsPage() {
     // Use FormData for file uploads
     const data = new FormData();
     data.append('name', formData.name);
-    data.append('category', formData.category);
+    data.append('category_id', formData.category_id.toString());
+    data.append('brand_id', formData.brand_id.toString());
     data.append('price', formData.price.toString());
     data.append('stock', formData.stock.toString());
     data.append('description', formData.description);
@@ -129,7 +156,7 @@ export default function AdminProductsPage() {
     if (imageFile) {
         data.append('image', imageFile);
     } else if (editingProduct && editingProduct.image) {
-        data.append('image', editingProduct.image); // Send current image path if no new file
+        data.append('image', editingProduct.image);
     }
 
     const url = editingProduct 
@@ -205,7 +232,7 @@ export default function AdminProductsPage() {
                 <thead>
                   <tr className="bg-slate-50/80 border-b border-slate-100">
                     <th className="px-8 py-5 text-xs font-black uppercase tracking-[0.2em] text-slate-400">Produk</th>
-                    <th className="px-8 py-5 text-xs font-black uppercase tracking-[0.2em] text-slate-400">Kategori</th>
+                    <th className="px-8 py-5 text-xs font-black uppercase tracking-[0.2em] text-slate-400">Kategori & Brand</th>
                     <th className="px-8 py-5 text-xs font-black uppercase tracking-[0.2em] text-slate-400 text-right">Harga</th>
                     <th className="px-8 py-5 text-xs font-black uppercase tracking-[0.2em] text-slate-400 text-center">Stok</th>
                     <th className="px-8 py-5 text-xs font-black uppercase tracking-[0.2em] text-slate-400 text-right">Aksi</th>
@@ -226,9 +253,14 @@ export default function AdminProductsPage() {
                         </div>
                       </td>
                       <td className="px-8 py-5">
-                        <span className="bg-primary/5 text-primary text-[10px] font-black tracking-widest px-3 py-1.5 rounded-full border border-primary/20">
-                          {p.category}
-                        </span>
+                        <div className="flex flex-col gap-1.5">
+                          <span className="w-fit bg-primary/5 text-primary text-[10px] font-black tracking-widest px-3 py-1 rounded-full border border-primary/20">
+                            {p.category_name || 'Tanpa Kategori'}
+                          </span>
+                          <span className="w-fit bg-slate-100 text-slate-500 text-[10px] font-black tracking-widest px-3 py-1 rounded-full border border-slate-200">
+                            {p.brand_name || 'Tanpa Brand'}
+                          </span>
+                        </div>
                       </td>
                       <td className="px-8 py-5 text-right font-black text-slate-800">
                          Rp {Number(p.price).toLocaleString('id-ID')}
@@ -294,13 +326,27 @@ export default function AdminProductsPage() {
                        <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Kategori</label>
                        <select 
                         className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-primary transition-all text-slate-800 font-bold appearance-none cursor-pointer"
-                        value={formData.category}
-                        onChange={(e) => setFormData({...formData, category: e.target.value})}
+                        value={formData.category_id}
+                        onChange={(e) => setFormData({...formData, category_id: e.target.value})}
                        >
-                         <option>Suku Cadang Mesin</option>
-                         <option>Oli & Cairan</option>
-                         <option>Aksesoris</option>
-                         <option>Ban & Velg</option>
+                         <option value="">Pilih Kategori</option>
+                         {categories.map(c => (
+                           <option key={c.id} value={c.id}>{c.name}</option>
+                         ))}
+                       </select>
+                    </div>
+
+                    <div className="space-y-2">
+                       <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Brand</label>
+                       <select 
+                        className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-primary transition-all text-slate-800 font-bold appearance-none cursor-pointer"
+                        value={formData.brand_id}
+                        onChange={(e) => setFormData({...formData, brand_id: e.target.value})}
+                       >
+                         <option value="">Pilih Brand</option>
+                         {brands.map(b => (
+                           <option key={b.id} value={b.id}>{b.name}</option>
+                         ))}
                        </select>
                     </div>
 

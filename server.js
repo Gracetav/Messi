@@ -21,11 +21,15 @@ const productRoutes = require('./server/routes/productRoutes');
 const authRoutes = require('./server/routes/authRoutes');
 const orderRoutes = require('./server/routes/orderRoutes');
 const userRoutes = require('./server/routes/userRoutes');
+const categoryRoutes = require('./server/routes/categoryRoutes');
+const brandRoutes = require('./server/routes/brandRoutes');
 
 app.use('/api/products', productRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/brands', brandRoutes);
 
 app.listen(PORT, () => {
     console.log(`Backend Express server is running on port ${PORT}`);
