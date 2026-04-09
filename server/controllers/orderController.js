@@ -7,8 +7,28 @@ exports.createOrder = async (req, res) => {
     return res.status(400).json({ message: 'Keranjang kosong' });
   }
 
+  const connection = await db.getConnection();
   try {
-    const [result] = await db.execute(
+    await connection.beginTransaction();
+
+    // Check stock for all items first
+    for (const item of items) {
+      const [products] = await connection.execute(
+        'SELECT stock, name FROM products WHERE id = ? FOR UPDATE', 
+        [item.id]
+      );
+      
+      if (products.length === 0) {
+        throw new Error(`Produk dengan ID ${item.id} tidak ditemukan`);
+      }
+      
+      const product = products[0];
+      if (product.stock < item.quantity) {
+        throw new Error(`Stok produk "${product.name}" tidak mencukupi (Tersedia: ${product.stock})`);
+      }
+    }
+
+    const [result] = await connection.execute(
       'INSERT INTO orders (user_id, total_price, status, address, phone) VALUES (?, ?, ?, ?, ?)',
       [user_id, total_price, 'pending', address, phone]
     );
@@ -16,22 +36,26 @@ exports.createOrder = async (req, res) => {
     const orderId = result.insertId;
     
     for (const item of items) {
-      await db.execute(
+      await connection.execute(
         'INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)',
         [orderId, item.id, item.quantity, item.price]
       );
       
       // Update stock
-      await db.execute(
+      await connection.execute(
         'UPDATE products SET stock = stock - ? WHERE id = ?',
         [item.quantity, item.id]
       );
     }
     
+    await connection.commit();
     res.status(201).json({ message: 'Order berhasil dibuat', orderId });
   } catch (error) {
+    await connection.rollback();
     console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(400).json({ message: error.message || 'Server error' });
+  } finally {
+    connection.release();
   }
 };
 

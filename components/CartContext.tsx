@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 
 export interface CartItem {
   id: number;
@@ -52,10 +53,35 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return [...prev, { ...product, quantity: 1 }];
     });
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Ditambahkan ke Keranjang',
+      text: `${product.name} telah masuk ke keranjang.`,
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+    });
   };
 
   const removeFromCart = (productId: number) => {
-    setCart((prev) => prev.filter((item) => item.id !== productId));
+    setCart((prev) => {
+        const item = prev.find(i => i.id === productId);
+        if (item) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Dihapus',
+                text: `${item.name} dihapus dari keranjang.`,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+            });
+        }
+        return prev.filter((item) => item.id !== productId);
+    });
   };
 
   const updateQuantity = (productId: number, quantity: number) => {

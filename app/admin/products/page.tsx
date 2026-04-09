@@ -33,9 +33,15 @@ export default function AdminProductsPage() {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api'}/products`);
       const data = await response.json();
-      setProducts(data);
+      if (Array.isArray(data)) {
+        setProducts(data);
+      } else {
+        console.error('Data produk bukan array:', data);
+        setProducts([]);
+      }
     } catch (err) {
       console.error('Gagal mengambil data produk:', err);
+      setProducts([]);
     } finally {
       setLoading(false);
     }

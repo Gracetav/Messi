@@ -23,9 +23,15 @@ export default function LandingPage() {
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api'}/products`);
         const data = await response.json();
-        setProducts(data);
+        if (Array.isArray(data)) {
+          setProducts(data);
+        } else {
+          console.error('Format data tidak sesuai:', data);
+          setProducts([]);
+        }
       } catch (err) {
         console.error('Gagal mengambil data produk:', err);
+        setProducts([]);
       } finally {
         setLoading(false);
       }
@@ -43,7 +49,7 @@ export default function LandingPage() {
     }
   }, [router]);
 
-  const categories = Array.from(new Set(products.map(p => p.category)));
+  const categories = Array.isArray(products) ? Array.from(new Set(products.map(p => p.category))) : [];
 
   const handleLogout = () => {
     localStorage.removeItem('user');

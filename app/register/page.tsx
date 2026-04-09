@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Swal from 'sweetalert2';
 
 export default function RegisterPage() {
   const [username, setUsername] = useState('');
@@ -33,13 +34,26 @@ export default function RegisterPage() {
       const data = await response.json();
 
       if (response.ok) {
-        alert('Registrasi Berhasil! Silakan login.');
-        router.push('/login');
+        Swal.fire({
+          icon: 'success',
+          title: 'Registrasi Berhasil!',
+          text: 'Akun Anda telah terdaftar. Silakan masuk untuk mulai belanja.',
+          confirmButtonColor: '#16a34a',
+        }).then(() => {
+          router.push('/login');
+        });
       } else {
         setError(data.message || 'Registrasi gagal, coba username lain.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Registrasi Gagal',
+          text: data.message || 'Username sudah digunakan atau data tidak valid.',
+          confirmButtonColor: '#ef4444',
+        });
       }
     } catch (err) {
       setError('Gagal menghubungi server backend.');
+      Swal.fire('Error', 'Gagal menghubungi server.', 'error');
     } finally {
       setLoading(false);
     }

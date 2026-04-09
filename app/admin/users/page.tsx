@@ -19,9 +19,15 @@ export default function UserManagementPage() {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api'}/users`);
       const data = await response.json();
-      setUsers(data);
+      if (Array.isArray(data)) {
+        setUsers(data);
+      } else {
+        console.error('Data user bukan array:', data);
+        setUsers([]);
+      }
     } catch (err) {
       console.error('Gagal mengambil data user:', err);
+      setUsers([]);
     } finally {
       setLoading(false);
     }

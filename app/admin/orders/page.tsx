@@ -20,9 +20,15 @@ export default function AdminOrdersPage() {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api'}/orders`);
       const data = await response.json();
-      setOrders(data);
+      if (Array.isArray(data)) {
+        setOrders(data);
+      } else {
+        console.error('Data order bukan array:', data);
+        setOrders([]);
+      }
     } catch (err) {
       console.error('Gagal mengambil data order:', err);
+      setOrders([]);
     } finally {
       setLoading(false);
     }

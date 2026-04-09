@@ -19,17 +19,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   });
 
   const handleCheckout = async () => {
-    if (!showShipForm) {
-      if (cart.length === 0) return;
-      setShowShipForm(true);
-      return;
-    }
-
-    if (!shipData.address || !shipData.phone) {
-      Swal.fire('Info', 'Mohon lengkapi alamat dan nomor HP.', 'warning');
-      return;
-    }
-
+    // Check login first before anything
     const userJson = localStorage.getItem('user');
     if (!userJson) {
       Swal.fire({
@@ -45,6 +35,25 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
           window.location.href = '/login';
         }
       });
+      return;
+    }
+
+    if (!showShipForm) {
+      if (cart.length === 0) {
+        Swal.fire({
+          icon: 'info',
+          title: 'Keranjang Kosong',
+          text: 'Silakan tambah barang ke keranjang terlebih dahulu.',
+          confirmButtonColor: '#16a34a'
+        });
+        return;
+      }
+      setShowShipForm(true);
+      return;
+    }
+
+    if (!shipData.address || !shipData.phone) {
+      Swal.fire('Info', 'Mohon lengkapi alamat dan nomor HP.', 'warning');
       return;
     }
 
