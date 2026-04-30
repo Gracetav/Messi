@@ -42,6 +42,7 @@ export default function AdminOrdersPage() {
     let statusLabel = '';
     switch(status) {
         case 'confirmed': statusLabel = 'Dikonfirmasi'; break;
+        case 'processing': statusLabel = 'Diproses'; break;
         case 'shipped': statusLabel = 'Dikirim'; break;
         case 'completed': statusLabel = 'Selesai'; break;
         case 'cancelled': statusLabel = 'Dibatalkan'; break;
@@ -131,12 +132,14 @@ export default function AdminOrdersPage() {
                       <span className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border ${
                         order.status === 'pending' ? 'bg-amber-50 text-amber-600 border-amber-100' :
                         order.status === 'confirmed' ? 'bg-indigo-50 text-indigo-600 border-indigo-100' :
+                        order.status === 'processing' ? 'bg-purple-50 text-purple-600 border-purple-100' :
                         order.status === 'shipped' ? 'bg-blue-50 text-blue-600 border-blue-100' :
                         order.status === 'completed' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
                         'bg-red-50 text-red-600 border-red-100'
                       }`}>
                         {order.status === 'pending' ? 'Menunggu Konfirmasi' :
                          order.status === 'confirmed' ? 'Dikonfirmasi' :
+                         order.status === 'processing' ? 'Diproses' :
                          order.status === 'shipped' ? 'Dikirim' :
                          order.status === 'completed' ? 'Selesai' : 'Batal'}
                       </span>
@@ -169,10 +172,18 @@ export default function AdminOrdersPage() {
                                     onClick={() => updateStatus(order.id, 'confirmed')}
                                     className="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-xl shadow-indigo-600/20 hover:scale-105 transition-all"
                                   >
-                                    Konfirmasi Bayar
+                                    {order.payment_method === 'cod' ? 'Konfirmasi Pesanan' : 'Konfirmasi Bayar'}
                                   </button>
                                )}
                                {order.status === 'confirmed' && (
+                                  <button 
+                                    onClick={() => updateStatus(order.id, 'processing')}
+                                    className="bg-purple-600 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-xl shadow-purple-600/20 hover:scale-105 transition-all"
+                                  >
+                                    Proses Barang
+                                  </button>
+                               )}
+                               {order.status === 'processing' && (
                                   <button 
                                     onClick={() => updateStatus(order.id, 'shipped')}
                                     className="bg-blue-600 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-xl shadow-blue-600/20 hover:scale-105 transition-all"

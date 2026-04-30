@@ -121,12 +121,14 @@ export default function MyOrdersPage() {
                     <span className={`px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest border ${
                       order.status === 'pending' ? 'bg-amber-50 text-amber-600 border-amber-100' :
                       order.status === 'confirmed' ? 'bg-indigo-50 text-indigo-600 border-indigo-100' :
+                      order.status === 'processing' ? 'bg-purple-50 text-purple-600 border-purple-100' :
                       order.status === 'shipped' ? 'bg-blue-50 text-blue-600 border-blue-100' :
                       order.status === 'completed' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
                       'bg-red-50 text-red-600 border-red-100'
                     }`}>
                       {order.status === 'pending' ? 'Menunggu Konfirmasi' : 
-                       order.status === 'confirmed' ? 'Pembayaran Diterima' :
+                       order.status === 'confirmed' ? 'Dikonfirmasi' :
+                       order.status === 'processing' ? 'Pesanan Diproses' :
                        order.status === 'shipped' ? 'Barang Dikirim' :
                        order.status === 'completed' ? 'Selesai' : 'Dibatalkan'}
                     </span>
@@ -232,7 +234,16 @@ export default function MyOrdersPage() {
                     <div className="px-8 pb-8">
                         <div className="bg-indigo-50 p-4 rounded-2xl border border-indigo-100 flex items-center gap-3">
                              <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold">✓</div>
-                             <p className="text-xs text-indigo-700 font-medium">Pembayaran Anda telah diverifikasi. Kami sedang menyiapkan barang untuk dikirim.</p>
+                             <p className="text-xs text-indigo-700 font-medium">Pesanan Anda telah dikonfirmasi. Admin sedang menyiapkan barang Anda.</p>
+                        </div>
+                    </div>
+                 )}
+
+                 {order.status === 'processing' && (
+                    <div className="px-8 pb-8">
+                        <div className="bg-purple-50 p-4 rounded-2xl border border-purple-100 flex items-center gap-3">
+                             <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold">⚙</div>
+                             <p className="text-xs text-purple-700 font-medium">Barang sedang dalam tahap pengecekan dan pengemasan.</p>
                         </div>
                     </div>
                  )}
