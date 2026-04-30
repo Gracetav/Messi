@@ -252,6 +252,23 @@ export default function LandingPage() {
                  <div className="flex gap-4">
                     <button 
                       onClick={() => {
+                        const userJson = localStorage.getItem('user');
+                        if (!userJson) {
+                          Swal.fire({
+                            icon: 'warning',
+                            title: 'Login Diperlukan',
+                            text: 'Silakan login terlebih dahulu untuk menambah barang ke keranjang.',
+                            confirmButtonColor: '#16a34a',
+                            showCancelButton: true,
+                            confirmButtonText: 'Login Sekarang',
+                            cancelButtonText: 'Nanti Saja'
+                          }).then((result) => {
+                            if (result.isConfirmed) {
+                              window.location.href = '/login';
+                            }
+                          });
+                          return;
+                        }
                         addToCart(selectedProduct);
                         setSelectedProduct(null);
                         setIsCartOpen(true);
