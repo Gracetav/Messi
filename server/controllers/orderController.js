@@ -1,7 +1,7 @@
 const db = require('../../lib/db');
 
 exports.createOrder = async (req, res) => {
-  const { user_id, items, total_price, address, phone } = req.body;
+  const { user_id, items, total_price, address, phone, payment_method } = req.body;
   
   if (!items || items.length === 0) {
     return res.status(400).json({ message: 'Keranjang kosong' });
@@ -29,8 +29,8 @@ exports.createOrder = async (req, res) => {
     }
 
     const [result] = await connection.execute(
-      'INSERT INTO orders (user_id, total_price, status, address, phone) VALUES (?, ?, ?, ?, ?)',
-      [user_id, total_price, 'pending', address, phone]
+      'INSERT INTO orders (user_id, total_price, status, address, phone, payment_method) VALUES (?, ?, ?, ?, ?, ?)',
+      [user_id, total_price, 'pending', address, phone, payment_method || 'transfer']
     );
     
     const orderId = result.insertId;

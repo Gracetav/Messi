@@ -15,7 +15,8 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const [showShipForm, setShowShipForm] = useState(false);
   const [shipData, setShipData] = useState({
     address: '',
-    phone: ''
+    phone: '',
+    payment_method: 'transfer'
   });
 
   const handleCheckout = async () => {
@@ -69,28 +70,48 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
           total_price: totalPrice,
           items: cart,
           address: shipData.address,
-          phone: shipData.phone
+          phone: shipData.phone,
+          payment_method: shipData.payment_method
         }),
       });
 
       if (response.ok) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Checkout Berhasil!',
-          html: `
-            <div class="text-left space-y-4">
-              <p>Pesanan Anda telah diterima. Silakan lakukan pembayaran ke rekening berikut:</p>
-              <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                <p class="font-bold text-slate-400 text-xs uppercase tracking-widest">Bank Central Asia (BCA)</p>
-                <p class="text-xl font-black text-slate-800">123 456 7890</p>
-                <p class="text-sm font-bold text-slate-600">a/n PT MESSI PART INDONESIA</p>
+        if (shipData.payment_method === 'cod') {
+          Swal.fire({
+            icon: 'success',
+            title: 'Checkout Berhasil!',
+            html: `
+              <div class="text-left space-y-4">
+                <p>Pesanan Anda telah diterima dengan metode <b>Bayar di Tempat (COD)</b>.</p>
+                <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                  <p class="text-sm font-bold text-blue-800">Silakan siapkan uang tunai sebesar:</p>
+                  <p class="text-2xl font-black text-blue-900">Rp ${totalPrice.toLocaleString('id-ID')}</p>
+                </div>
+                <p class="text-sm text-slate-500 italic">*Kurir akan menghubungi Anda saat menuju lokasi.</p>
               </div>
-              <p class="text-sm text-slate-500 italic">*Konfirmasi akan diproses dalam 1x24 jam oleh admin.</p>
-            </div>
-          `,
-          confirmButtonColor: '#16a34a',
-          confirmButtonText: 'Saya Mengerti'
-        });
+            `,
+            confirmButtonColor: '#16a34a',
+            confirmButtonText: 'Saya Mengerti'
+          });
+        } else {
+          Swal.fire({
+            icon: 'success',
+            title: 'Checkout Berhasil!',
+            html: `
+              <div class="text-left space-y-4">
+                <p>Pesanan Anda telah diterima. Silakan lakukan pembayaran ke rekening berikut:</p>
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                  <p class="font-bold text-slate-400 text-xs uppercase tracking-widest">Bank Central Asia (BCA)</p>
+                  <p class="text-xl font-black text-slate-800">123 456 7890</p>
+                  <p class="text-sm font-bold text-slate-600">a/n PT MESSI PART INDONESIA</p>
+                </div>
+                <p class="text-sm text-slate-500 italic">*Konfirmasi akan diproses dalam 1x24 jam oleh admin.</p>
+              </div>
+            `,
+            confirmButtonColor: '#16a34a',
+            confirmButtonText: 'Saya Mengerti'
+          });
+        }
         clearCart();
         setShowShipForm(false);
         onClose();
@@ -167,6 +188,26 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       value={shipData.phone}
                       onChange={(e) => setShipData({...shipData, phone: e.target.value})}
                     />
+                  </div>
+
+                  <div className="space-y-3 pt-2">
+                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Metode Pembayaran</label>
+                    <div className="grid grid-cols-2 gap-3">
+                       <button 
+                        onClick={() => setShipData({...shipData, payment_method: 'transfer'})}
+                        className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${shipData.payment_method === 'transfer' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-100 bg-white text-slate-400 hover:border-slate-200'}`}
+                       >
+                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                         <span className="text-[10px] font-black uppercase tracking-wider">Transfer Bank</span>
+                       </button>
+                       <button 
+                        onClick={() => setShipData({...shipData, payment_method: 'cod'})}
+                        className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${shipData.payment_method === 'cod' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-100 bg-white text-slate-400 hover:border-slate-200'}`}
+                       >
+                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                         <span className="text-[10px] font-black uppercase tracking-wider">Bayar di Tempat</span>
+                       </button>
+                    </div>
                   </div>
                 </div>
               ) : (

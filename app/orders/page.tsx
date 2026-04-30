@@ -111,6 +111,11 @@ export default function MyOrdersPage() {
                            <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Tanggal</p>
                            <p className="font-bold text-slate-600">{new Date(order.created_at).toLocaleDateString()}</p>
                         </div>
+                        <div className="h-8 w-[1px] bg-slate-200"></div>
+                        <div>
+                           <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Metode</p>
+                           <p className="font-bold text-slate-600 uppercase text-[10px] tracking-widest bg-slate-200 px-2 py-1 rounded-md">{order.payment_method || 'transfer'}</p>
+                        </div>
                     </div>
                     
                     <span className={`px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest border ${
@@ -134,7 +139,7 @@ export default function MyOrdersPage() {
                     </div>
                     
                     <div className="flex flex-wrap gap-3">
-                        {order.status === 'pending' && (
+                        {order.status === 'pending' && order.payment_method !== 'cod' && (
                             <button 
                                 onClick={() => Swal.fire({
                                     title: 'Informasi Pembayaran',
@@ -158,7 +163,7 @@ export default function MyOrdersPage() {
                             </button>
                         )}
 
-                        {(order.status === 'pending') && (
+                        {(order.status === 'pending') && order.payment_method !== 'cod' && (
                             <div className="relative">
                                 <input 
                                     type="file" 
@@ -181,6 +186,12 @@ export default function MyOrdersPage() {
                                 >
                                     {order.payment_proof ? 'Ganti Bukti Transfer' : 'Upload Bukti Transfer'}
                                 </button>
+                            </div>
+                        )}
+
+                        {order.payment_method === 'cod' && order.status === 'pending' && (
+                            <div className="bg-blue-50 px-6 py-3 rounded-2xl border border-blue-100">
+                                <p className="text-blue-600 font-bold text-sm">Metode COD: Bayar saat barang sampai</p>
                             </div>
                         )}
                     </div>

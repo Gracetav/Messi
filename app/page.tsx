@@ -230,9 +230,14 @@ export default function LandingPage() {
               </div>
               <div className="md:w-1/2 p-12 flex flex-col">
                  <div className="mb-8">
-                    <span className="bg-primary/10 text-primary text-[10px] font-black tracking-widest px-4 py-1.5 rounded-full border border-primary/20 uppercase">
-                        {selectedProduct.category_name}
-                    </span>
+                    <div className="flex items-center gap-3">
+                        <span className="bg-primary/10 text-primary text-[10px] font-black tracking-widest px-4 py-1.5 rounded-full border border-primary/20 uppercase">
+                            {selectedProduct.category_name}
+                        </span>
+                        <span className={`text-[10px] font-black tracking-widest px-4 py-1.5 rounded-full border uppercase ${selectedProduct.stock > 0 ? 'bg-green-50 text-green-600 border-green-200' : 'bg-red-50 text-red-600 border-red-200'}`}>
+                            {selectedProduct.stock > 0 ? `Stok: ${selectedProduct.stock} Tersedia` : 'Stok Habis'}
+                        </span>
+                    </div>
                     <h2 className="text-4xl font-black text-slate-800 mt-4 leading-tight">{selectedProduct.name}</h2>
                     <p className="text-3xl font-black text-primary mt-4">Rp {Number(selectedProduct.price).toLocaleString('id-ID')}</p>
                  </div>
@@ -251,9 +256,10 @@ export default function LandingPage() {
                         setSelectedProduct(null);
                         setIsCartOpen(true);
                       }}
-                      className="flex-grow bg-primary hover:bg-primary-hover text-white py-5 rounded-2xl font-black text-lg transition-all shadow-xl shadow-primary/20 hover:-translate-y-1 active:translate-y-0"
+                      disabled={selectedProduct.stock <= 0}
+                      className="flex-grow bg-primary hover:bg-primary-hover disabled:bg-slate-200 text-white py-5 rounded-2xl font-black text-lg transition-all shadow-xl shadow-primary/20 hover:-translate-y-1 active:translate-y-0"
                     >
-                        Tambah ke Keranjang
+                        {selectedProduct.stock > 0 ? 'Tambah ke Keranjang' : 'Stok Habis'}
                     </button>
                     <button 
                       onClick={() => setSelectedProduct(null)}

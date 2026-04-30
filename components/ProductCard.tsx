@@ -9,6 +9,7 @@ interface ProductProps {
     name: string;
     category_name: string;
     price: number;
+    stock: number;
     image: string;
     description: string;
   };
@@ -36,9 +37,12 @@ const ProductCard = ({ product, onOpenDetail }: ProductProps) => {
           alt={product.name}
           className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700"
         />
-        <div className="absolute top-4 left-4">
-          <span className="bg-white/90 backdrop-blur-sm text-slate-800 text-[10px] uppercase font-black px-3 py-1.5 rounded-full border border-slate-100 shadow-sm">
+        <div className="absolute top-4 left-4 flex flex-col gap-2">
+          <span className="bg-white/90 backdrop-blur-sm text-slate-800 text-[10px] uppercase font-black px-3 py-1.5 rounded-full border border-slate-100 shadow-sm w-fit">
             {product.category_name}
+          </span>
+          <span className={`text-[10px] uppercase font-black px-3 py-1.5 rounded-full border shadow-sm w-fit ${product.stock > 0 ? 'bg-green-500/90 text-white border-green-600' : 'bg-red-500/90 text-white border-red-600'}`}>
+            {product.stock > 0 ? `Stok: ${product.stock}` : 'Stok Habis'}
           </span>
         </div>
         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">

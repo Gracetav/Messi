@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS orders (
     status ENUM('pending', 'confirmed', 'shipped', 'completed', 'cancelled') DEFAULT 'pending',
     address TEXT,
     phone VARCHAR(20),
+    payment_method ENUM('transfer', 'cod') DEFAULT 'transfer',
     payment_proof TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE

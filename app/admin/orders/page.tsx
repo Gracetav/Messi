@@ -150,6 +150,10 @@ export default function AdminOrdersPage() {
                          <p className="text-2xl font-black text-slate-800">Rp {Number(order.total_price).toLocaleString('id-ID')}</p>
                       </div>
                       <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Metode Pembayaran</p>
+                         <p className="text-xs font-black text-primary uppercase tracking-widest">{order.payment_method || 'transfer'}</p>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Kontak & Alamat</p>
                          <p className="text-xs font-bold text-slate-700">{order.phone || 'No HP -'}</p>
                          <p className="text-xs text-slate-500 mt-1">{order.address || 'Alamat -'}</p>
