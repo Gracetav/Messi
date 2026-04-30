@@ -26,6 +26,11 @@ const ProductCard = ({ product, onOpenDetail }: ProductProps) => {
     return `${baseUrl}${imagePath}`;
   };
 
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    addToCart(product);
+  };
+
   return (
     <div className="card w-full max-w-sm overflow-hidden flex flex-col h-full bg-white group shadow-sm border border-slate-100 rounded-3xl hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
       <div 
@@ -72,17 +77,6 @@ const ProductCard = ({ product, onOpenDetail }: ProductProps) => {
           <button 
             onClick={handleAddToCart}
             className="bg-slate-900 hover:bg-black text-white p-4 rounded-2xl shadow-xl shadow-slate-900/10 hover:scale-110 active:scale-95 transition-all duration-300 group/btn"
-          >
-             <svg xmlns="http://www.w3.org/2000/svg" className="group-hover:rotate-12 transition-transform" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m5 11 4-7"/><path d="m19 11-4-7"/><path d="M2 11h20"/><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4"/><path d="M9 11v1"/><path d="M15 11v1"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default ProductCard;
-e-900/10 hover:scale-110 active:scale-95 transition-all duration-300 group/btn"
           >
              <svg xmlns="http://www.w3.org/2000/svg" className="group-hover:rotate-12 transition-transform" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m5 11 4-7"/><path d="m19 11-4-7"/><path d="M2 11h20"/><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4"/><path d="M9 11v1"/><path d="M15 11v1"/></svg>
           </button>
