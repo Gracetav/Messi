@@ -135,7 +135,7 @@ export default function AdminOrdersPage() {
                         order.status === 'completed' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
                         'bg-red-50 text-red-600 border-red-100'
                       }`}>
-                        {order.status === 'pending' ? 'Pending' :
+                        {order.status === 'pending' ? 'Menunggu Konfirmasi' :
                          order.status === 'confirmed' ? 'Dikonfirmasi' :
                          order.status === 'shipped' ? 'Dikirim' :
                          order.status === 'completed' ? 'Selesai' : 'Batal'}

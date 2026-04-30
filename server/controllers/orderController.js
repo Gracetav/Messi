@@ -88,17 +88,72 @@ exports.getAllOrders = async (req, res) => {
 
 exports.updateOrderStatus = async (req, res) => {
   const { id } = req.params;
-  const { status } = req.body; // 'completed' or 'cancelled'
+  const { status } = req.body; // 'completed' or 'cancelled' or 'confirmed' or 'shipped'
   
+  const connection = await db.getConnection();
   try {
-    await db.execute(
+    await connection.beginTransaction();
+
+    // 1. Get current order status and items
+    const [orders] = await connection.execute('SELECT status FROM orders WHERE id = ? FOR UPDATE', [id]);
+    if (orders.length === 0) {
+      throw new Error('Order tidak ditemukan');
+    }
+    
+    const currentStatus = orders[0].status;
+
+    // 2. Update order status
+    await connection.execute(
       'UPDATE orders SET status = ? WHERE id = ?',
       [status, id]
     );
+
+    // 3. Handle stock recovery if status changed to 'cancelled'
+    // Only return stock if it wasn't already cancelled
+    if (status === 'cancelled' && currentStatus !== 'cancelled') {
+      const [items] = await connection.execute(
+        'SELECT product_id, quantity FROM order_items WHERE order_id = ?',
+        [id]
+      );
+
+      for (const item of items) {
+        await connection.execute(
+          'UPDATE products SET stock = stock + ? WHERE id = ?',
+          [item.quantity, item.product_id]
+        );
+      }
+    }
+
+    // 4. Handle stock deduction if status changed FROM 'cancelled' to something else (admin correction)
+    // This is optional but good for consistency if admin accidentally cancelled and then confirmed
+    if (currentStatus === 'cancelled' && status !== 'cancelled') {
+       const [items] = await connection.execute(
+        'SELECT product_id, quantity FROM order_items WHERE order_id = ?',
+        [id]
+      );
+
+      for (const item of items) {
+        // Check if stock is sufficient before re-deducting
+        const [products] = await connection.execute('SELECT stock, name FROM products WHERE id = ? FOR UPDATE', [item.product_id]);
+        if (products[0].stock < item.quantity) {
+            throw new Error(`Stok produk "${products[0].name}" tidak mencukupi untuk membatalkan pembatalan (Tersedia: ${products[0].stock})`);
+        }
+
+        await connection.execute(
+          'UPDATE products SET stock = stock - ? WHERE id = ?',
+          [item.quantity, item.product_id]
+        );
+      }
+    }
+
+    await connection.commit();
     res.json({ message: 'Status order diperbarui' });
   } catch (error) {
+    await connection.rollback();
     console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: error.message || 'Server error' });
+  } finally {
+    connection.release();
   }
 };
 
